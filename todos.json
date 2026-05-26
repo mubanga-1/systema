@@ -1,0 +1,21 @@
+[
+  {
+    "id": "todo-001",
+    "title": "Implement language locales for landing page",
+    "description": "Add locale files and wire text on the landing page to `next-intl` so content switches based on user locale.",
+    "status": "not-started"
+  },
+  {
+    "id": "todo-002",
+    "title": "Fix cross-origin request error when running dev server (allowedDevOrigins)",
+    "description": "Investigate and add the proper `allowedDevOrigins` configuration to the dev server to resolve CORS errors during local development.",
+    "status": "completed"
+  }
+  ,
+  {
+    "id": "todo-003",
+    "title": "Add Slide 3 (Concept to Publication)",
+    "description": "Concept to Publication\n\nSteps:\n1) Input: Submit raw concepts to your dedicated workspace.\n2) Optimize: AI refines content using EPIC frameworks and localized targeting.\n3) Execute: Systema auto-publishes live via your private API endpoint.",
+    "status": "completed"
+  }
+]

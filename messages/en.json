@@ -1,0 +1,111 @@
+{
+  "login": "Login",
+  "logout": "Log out",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "welcome": "Welcome to Systema",
+  "home": "Home",
+  "email": "Email",
+  "password": "Password",
+  "signIn": "Sign in",
+  "register": "Register",
+  "confirmPassword": "Confirm password",
+  "signUp": "Create account",
+  "hasAccount": "Already have an account?",
+  "noAccount": "Don't have an account?",
+  "passwordMismatch": "Passwords do not match",
+  "signUpError": "Registration failed",
+  "signInError": "Sign in failed",
+  "accountNotFound": "We could not find an account for those credentials. Create an account to continue.",
+  "emailNotConfirmed": "Please confirm your email address before signing in.",
+  "confirmEmailTitle": "Check your email",
+  "confirmEmailBody": "We sent you a confirmation link. After confirming, sign in to continue to payment.",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "checkout": "Checkout",
+  "checkoutDescription": "Complete your subscription payment to access Systema.",
+  "paymentUnpaid": "Payment status: unpaid",
+  "homeCarousel": {
+    "cryptomusPlaceholder": "Cryptomus payment options will appear here.",
+    "slides": [
+      {
+        "title": "The Autonomous Content Pipeline for Elite Brands.",
+        "subtitle": "Systema is an unblockable API bridge between AI agents and Instagram. Write, optimize, and publish on autopilot.",
+        "cta": "Initialize Pipeline"
+      },
+      {
+        "title": "Engineered to Bypass Bottlenecks",
+        "grid": [
+          {
+            "title": "Borderless Access",
+            "description": "Crypto-native; sanction-proof."
+          },
+          {
+            "title": "Accelerated Path",
+            "description": "Direct Meta Sandbox; skip approval delays."
+          },
+          {
+            "title": "Open API",
+            "description": "Integrate any LLM instantly."
+          }
+        ]
+      },
+      {
+        "title": "Concept to Publication.",
+        "steps": [
+          {
+            "title": "Drop the Idea",
+            "description": "Input raw concepts."
+          },
+          {
+            "title": "AI Optimization",
+            "description": "EPIC framework, Russian/English targeting."
+          },
+          {
+            "title": "Systema Executes",
+            "description": "Auto-publish via our API."
+          }
+        ]
+      },
+      {
+        "title": "Scale Your Infrastructure.",
+        "tiers": [
+          {
+            "name": "BASE",
+            "price": "$29/mo",
+            "detail": "Scheduler"
+          },
+          {
+            "name": "PRO",
+            "price": "$79/mo",
+            "detail": "API Access"
+          },
+          {
+            "name": "VANGUARD",
+            "price": "$299/mo",
+            "detail": "Full Done-For-You AI Pipeline"
+          }
+        ],
+        "cta": "Select Your Tier"
+      }
+    ],
+    "stepLabel": "STEP",
+    "previousSlideAria": "Previous slide",
+    "nextSlideAria": "Next slide",
+    "goToSlideAria": "Go to slide",
+    "paywall": {
+      "title": "Secure Checkout",
+      "subtitle": "Infrastructure Access",
+      "tierLabel": "Selected Tier",
+      "checkoutLabel": "Proceed to Payment",
+      "closeAria": "Close paywall"
+    }
+  },
+  "footer": {
+    "copyright": "Systema © 2026. The Unbreakable Social Infrastructure.",
+    "links": {
+      "support": "Support",
+      "terms": "Terms of Use"
+    }
+  }
+}

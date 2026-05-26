@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --navbar-height: 56px;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.app-themed-bg {
+  background-color: #020b1f;
+  background-image:
+    linear-gradient(rgba(1, 9, 26, 0.72), rgba(1, 9, 26, 0.72)),
+    url('/systema-app-bg.jpeg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
