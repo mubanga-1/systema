@@ -25,8 +25,20 @@
   "checkout": "Checkout",
   "checkoutDescription": "Complete your subscription payment to access Systema.",
   "paymentUnpaid": "Payment status: unpaid",
+  "paymentPaid": "Payment status: paid",
+  "checkoutAlreadyPaid": "Your account is already marked as paid. Go to the dashboard to continue.",
+  "checkoutPaymentSuccess": "Payment completed. Refresh the page after a few moments if the status has not updated yet.",
+  "checkoutPaymentCancelled": "Payment was canceled. Use the button below to retry.",
+  "checkoutNeedHelp": "Need help?",
+  "checkoutHelpText": "Your payment will be processed with NOWPayments. If the invoice does not open, double-check your browser settings and try again.",
+  "checkoutSelectTier": "Select your tier",
+  "dashboardActiveTitle": "Subscription active",
+  "dashboardActiveBody": "Your Systema scheduler is available. Create campaigns, queue posts, and monitor automation from the dashboard.",
+  "dashboardPaywallTitle": "Subscription required",
+  "dashboardPaywallDescription": "Complete your subscription payment to unlock the scheduler and advanced automation tools.",
+  "dashboardPaywallAction": "Upgrade now",
   "homeCarousel": {
-    "cryptomusPlaceholder": "Cryptomus payment options will appear here.",
+    "cryptomusPlaceholder": "NOWPayments payment options will appear here.",
     "slides": [
       {
         "title": "The Autonomous Content Pipeline for Elite Brands.",

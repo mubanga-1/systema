@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
 export function HomeCarousel() {
   const [slide, setSlide] = useState<number>(0);
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedTier, setSelectedTier] = useState(1); // Default to Pro (index 1)
+  const planKeys = ['base', 'pro', 'vanguard'] as const;
+  const selectedPlan = planKeys[selectedTier];
   const next = () => setSlide((s) => (s + 1) % 4);
   const prev = () => setSlide((s) => (s + 4 - 1) % 4);
   const t = useTranslations('homeCarousel');
@@ -209,13 +211,13 @@ export function HomeCarousel() {
 
             <div className="space-y-6">
                <div className="text-center">
-                  <p className="text-sm text-zinc-400 mb-4">{t('cryptomusPlaceholder')}</p>
-                  <div className="h-40 border-2 border-dashed border-neutral-800 rounded-xl flex flex-col items-center justify-center text-neutral-600 gap-3 group hover:border-cyan-500/30 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    <span className="text-xs font-mono uppercase tracking-widest">{t('paywall.checkoutLabel')}</span>
-                  </div>
+                  <p className="text-sm text-zinc-400 mb-4">{t('homeCarousel.cryptomusPlaceholder')}</p>
+                  <Link
+                    href={`/checkout?plan=${selectedPlan}`}
+                    className="inline-flex w-full items-center justify-center rounded-full bg-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-cyan-400"
+                  >
+                    {t('homeCarousel.paywall.checkoutLabel')}
+                  </Link>
                </div>
             </div>
           </div>

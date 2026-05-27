@@ -25,8 +25,20 @@
   "checkout": "Оплата",
   "checkoutDescription": "Оплатите подписку, чтобы получить доступ к Systema.",
   "paymentUnpaid": "Статус оплаты: не оплачено",
+  "paymentPaid": "Статус оплаты: оплачено",
+  "checkoutAlreadyPaid": "Ваша учетная запись уже отмечена как оплаченная. Перейдите в панель управления для продолжения.",
+  "checkoutPaymentSuccess": "Платеж завершен. Обновите страницу через несколько секунд, если статус еще не обновился.",
+  "checkoutPaymentCancelled": "Платеж был отменен. Повторите попытку ниже.",
+  "checkoutNeedHelp": "Нужна помощь?",
+  "checkoutHelpText": "Платеж будет обработан через NOWPayments. Если счет не открывается, проверьте настройки браузера и попробуйте снова.",
+  "checkoutSelectTier": "Выберите тариф",
+  "dashboardActiveTitle": "Подписка активна",
+  "dashboardActiveBody": "Ваш планировщик Systema готов. Создавайте кампании, ставьте публикации в очередь и следите за автоматизацией.",
+  "dashboardPaywallTitle": "Требуется подписка",
+  "dashboardPaywallDescription": "Оплатите подписку, чтобы разблокировать планировщик и расширенные инструменты автоматизации.",
+  "dashboardPaywallAction": "Перейти к оплате",
   "homeCarousel": {
-    "cryptomusPlaceholder": "Варианты оплаты Cryptomus появятся здесь.",
+    "cryptomusPlaceholder": "Варианты оплаты NOWPayments появятся здесь.",
     "slides": [
       {
         "title": "Автономный контент-конвейер для сильных брендов.",
