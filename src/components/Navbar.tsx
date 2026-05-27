@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { GuestNavTabs } from './GuestNavTabs';
 import { NavbarLogo } from './NavbarLogo';
 import { MobileMenu } from './MobileMenu';
+import { ROUTES } from './routes';
 
 type NavbarProps = {
   locale: 'ru' | 'en';
@@ -18,13 +19,16 @@ export async function Navbar({ locale }: NavbarProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Treat anonymous users as guests so they see Home, Login, and Register
+  const isRegisteredUser = Boolean(user && !user.is_anonymous);
+
   return (
     <header className="border-b border-cyan-200/20 bg-[linear-gradient(90deg,#061329_0%,#0A2B50_34%,#0E355E_68%,#154067_100%)] backdrop-blur sticky top-0 z-[60] h-14 transition-all duration-300">
       <nav className="mx-auto flex h-full max-w-6xl items-center px-4 relative">
         {/* Logo Unit - Anchored left on mobile (< 608px) */}
         <div className="flex flex-1 justify-start min-[608px]:flex-none">
           <div className="flex items-center gap-4 min-[821px]:gap-7">
-            <NavbarLogo user={user}>
+            <NavbarLogo user={isRegisteredUser ? user : null}>
               <Image
                 src="/systema-logo.svg"
                 alt="Systema logo"
@@ -47,9 +51,9 @@ export async function Navbar({ locale }: NavbarProps) {
 
         {/* Desktop Navigation Links */}
         <div className="hidden min-[608px]:flex flex-1 justify-start items-center gap-3 min-[821px]:gap-5 text-xs min-[821px]:text-sm font-medium text-zinc-200 ml-4">
-        {user ? (
+        {isRegisteredUser ? (
             <>
-              <Link href="/dashboard">{t('dashboard')}</Link>
+              <Link href={ROUTES.DASHBOARD}>{t('dashboard')}</Link>
               <span
                 className="cursor-not-allowed opacity-50"
                 aria-disabled="true"
@@ -73,7 +77,7 @@ export async function Navbar({ locale }: NavbarProps) {
           </div>
           <div className="min-[608px]:hidden">
             <MobileMenu 
-              user={user}
+              user={isRegisteredUser ? user : null}
               homeLabel={t('home')}
               loginLabel={t('login')}
               signupLabel={t('register')}

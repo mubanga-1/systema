@@ -5,7 +5,7 @@ import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 
 export type SignUpState = {
-  errorCode?: 'passwordMismatch' | 'signUpError';
+  errorCode?: 'passwordMismatch' | 'signUpError' | 'emailExists';
   message?: string;
 };
 
@@ -45,6 +45,17 @@ export async function signUpAction(
   });
 
   if (error) {
+    const msg = error.message.toLowerCase();
+    const duplicate =
+      msg.includes('already') ||
+      msg.includes('duplicate') ||
+      msg.includes('user already') ||
+      msg.includes('email') && msg.includes('exists');
+
+    if (duplicate) {
+      return { errorCode: 'emailExists', message: 'Email already registered' };
+    }
+
     return { errorCode: 'signUpError', message: error.message };
   }
 

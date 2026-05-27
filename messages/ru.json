@@ -37,6 +37,10 @@
   "dashboardPaywallTitle": "Требуется подписка",
   "dashboardPaywallDescription": "Оплатите подписку, чтобы разблокировать планировщик и расширенные инструменты автоматизации.",
   "dashboardPaywallAction": "Перейти к оплате",
+  "emailAlreadyRegistered": "Этот адрес электронной почты уже зарегистрирован. Войдите или сбросьте пароль.",
+  "resetPassword": "Сбросить пароль",
+  "resetPasswordSent": "Если учетная запись с этим адресом существует, отправлена ссылка для сброса.",
+  "resetPasswordError": "Не удалось отправить письмо для сброса. Попробуйте позже.",
   "homeCarousel": {
     "cryptomusPlaceholder": "Варианты оплаты NOWPayments появятся здесь.",
     "slides": [

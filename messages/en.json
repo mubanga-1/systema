@@ -37,6 +37,10 @@
   "dashboardPaywallTitle": "Subscription required",
   "dashboardPaywallDescription": "Complete your subscription payment to unlock the scheduler and advanced automation tools.",
   "dashboardPaywallAction": "Upgrade now",
+  "emailAlreadyRegistered": "This email is already registered. Sign in or request a password reset.",
+  "resetPassword": "Reset password",
+  "resetPasswordSent": "If an account exists for that email, a reset link has been sent.",
+  "resetPasswordError": "Unable to send reset email. Try again later.",
   "homeCarousel": {
     "cryptomusPlaceholder": "NOWPayments payment options will appear here.",
     "slides": [
