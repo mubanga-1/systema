@@ -51,11 +51,8 @@ export async function signInAction(
 
   if (error) {
     if (isInvalidCredentials(error.message)) {
-      redirect({
-        href: '/register?reason=accountNotFound',
-        locale,
-      });
-      return {};
+      // Return a clear sign-in error so the UI can show "invalid credentials"
+      return { errorCode: 'signInError', message: 'Invalid email or password' };
     }
 
     if (isEmailNotConfirmed(error.message)) {

@@ -20,9 +20,21 @@ export async function GET(
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(
+      const redirectResponse = NextResponse.redirect(
         new URL(`/${locale}${nextPath}`, request.url)
       );
+
+      if (nextPath === '/enter-new-password') {
+        redirectResponse.cookies.set('systema_password_recovery', '1', {
+          httpOnly: true,
+          maxAge: 10 * 60,
+          path: `/${locale}/enter-new-password`,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+        });
+      }
+
+      return redirectResponse;
     }
   }
 

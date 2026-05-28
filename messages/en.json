@@ -7,6 +7,7 @@
   "home": "Home",
   "email": "Email",
   "password": "Password",
+  "newPassword": "New password",
   "signIn": "Sign in",
   "register": "Register",
   "confirmPassword": "Confirm password",
@@ -26,17 +27,147 @@
   "checkoutDescription": "Complete your subscription payment to access Systema.",
   "paymentUnpaid": "Payment status: unpaid",
   "paymentPaid": "Payment status: paid",
+  "paymentStatus": {
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "active": "Active",
+    "past_due": "Past due",
+    "canceled": "Canceled",
+    "pending": "Pending",
+    "unknown": "Unknown"
+  },
   "checkoutAlreadyPaid": "Your account is already marked as paid. Go to the dashboard to continue.",
   "checkoutPaymentSuccess": "Payment completed. Refresh the page after a few moments if the status has not updated yet.",
   "checkoutPaymentCancelled": "Payment was canceled. Use the button below to retry.",
   "checkoutNeedHelp": "Need help?",
-  "checkoutHelpText": "Your payment will be processed with NOWPayments. If the invoice does not open, double-check your browser settings and try again.",
+  "checkoutHelpText": "Your payment will be processed with NOWPayments. Select Tether USD (USDT) on TRON network. If the invoice does not open, double-check your browser settings and try again.",
+  "checkoutUsdtNotice": "Payments must be made in Tether USD (USDT) on TRON network only.",
   "checkoutSelectTier": "Select your tier",
   "dashboardActiveTitle": "Subscription active",
   "dashboardActiveBody": "Your Systema scheduler is available. Create campaigns, queue posts, and monitor automation from the dashboard.",
   "dashboardPaywallTitle": "Subscription required",
   "dashboardPaywallDescription": "Complete your subscription payment to unlock the scheduler and advanced automation tools.",
   "dashboardPaywallAction": "Upgrade now",
+  "emailAlreadyRegistered": "This email is already registered. Sign in or request a password reset.",
+  "resetPassword": "Reset password",
+  "enterNewPassword": "Enter new password",
+  "enterNewPasswordDescription": "Choose a new password for your Systema account.",
+  "resetPasswordSent": "If an account exists for that email, a reset link has been sent.",
+  "resetPasswordError": "Unable to send reset email. Try again later.",
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your account, subscription, access controls, and automation defaults.",
+    "signOut": "Log out",
+    "comingSoon": "Coming soon",
+    "account": {
+      "title": "Account profile",
+      "email": "Email",
+      "language": "Preferred language",
+      "joined": "Joined",
+      "profileStatus": "Payment status"
+    },
+    "subscription": {
+      "title": "Subscription and billing",
+      "renewal": "Renewal: {date}",
+      "manage": "Manage plan",
+      "dashboard": "Open dashboard"
+    },
+    "api": {
+      "title": "API access",
+      "description": "Generate and rotate API credentials for agent-to-Systema publishing once API access is enabled.",
+      "keyStatus": "API key placeholder",
+      "generate": "Generate key"
+    },
+    "instagram": {
+      "title": "Instagram connection",
+      "description": "Connect Meta or Instagram accounts, review permissions, and switch between sandbox and production modes.",
+      "status": "No account connected",
+      "mode": "Meta Sandbox mode"
+    },
+    "publishing": {
+      "title": "Publishing preferences",
+      "approval": "Require approval before publishing",
+      "postingWindow": "Use default posting window",
+      "timezone": "Use account timezone",
+      "brandVoice": "Apply brand voice presets"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "payments": "Payment and renewal alerts",
+      "posts": "Post success and failure alerts",
+      "apiErrors": "API error alerts"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Change your password with your current password, or use the recovery flow if you forgot it.",
+      "currentPassword": "Current password",
+      "changePassword": "Change password",
+      "changeSuccess": "Password updated.",
+      "invalidCurrentPassword": "The current password is incorrect.",
+      "changeError": "Unable to update password. Try again later.",
+      "resetPassword": "Reset password",
+      "forgotPassword": "Forgot password?",
+      "resetEmailSent": "Password reset email sent to your account email.",
+      "resetEmailError": "Unable to send password reset email. Try again later.",
+      "sessions": "Manage sessions"
+    },
+    "danger": {
+      "title": "Danger zone",
+      "description": "Account deletion and integration revocation will be added behind an extra confirmation step.",
+      "delete": "Delete account"
+    },
+    "invoices": {
+      "title": "Recent invoices",
+      "empty": "No invoices yet."
+    }
+  },
+  "termsPage": {
+    "eyebrow": "Legal",
+    "title": "Terms of Use",
+    "intro": "These terms outline the expected use of Systema while the product is in active development.",
+    "access": {
+      "title": "Account access",
+      "body": "You are responsible for keeping your login credentials secure and for all activity that happens through your account."
+    },
+    "payments": {
+      "title": "Payments and subscriptions",
+      "body": "Paid access depends on successful subscription payment. If a payment fails or expires, access to protected product areas may be paused until payment is restored."
+    },
+    "acceptableUse": {
+      "title": "Acceptable use",
+      "body": "Do not use Systema for spam, impersonation, illegal activity, platform abuse, or attempts to bypass security controls."
+    },
+    "availability": {
+      "title": "Service availability",
+      "body": "Systema may change, pause, or limit features while integrations, API access, billing, and publishing workflows are improved."
+    },
+    "liability": {
+      "title": "Limitations",
+      "body": "You are responsible for reviewing content, permissions, and connected accounts before publishing or automating workflows."
+    }
+  },
+  "supportPage": {
+    "eyebrow": "Help",
+    "title": "Support",
+    "intro": "Get help with account access, billing, payments, and upcoming automation features.",
+    "billing": {
+      "title": "Billing",
+      "body": "For payment status, renewal, or invoice questions, include the email address on your Systema account and any invoice reference."
+    },
+    "access": {
+      "title": "Account access",
+      "body": "Use password reset for login issues. If email confirmation or recovery links fail, request help with the affected email address."
+    },
+    "technical": {
+      "title": "Technical setup",
+      "body": "For API, Instagram, or automation issues, include the plan, browser, and the action you were trying to complete."
+    },
+    "contact": {
+      "title": "Need direct help?",
+      "body": "Support intake is being centralized. For now, start from Settings so the team can match requests to your account state.",
+      "action": "Open settings"
+    }
+  },
   "homeCarousel": {
     "cryptomusPlaceholder": "NOWPayments payment options will appear here.",
     "slides": [

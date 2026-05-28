@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link } from '@/i18n/navigation';
+import { ROUTES } from './routes';
 
 export function MobileMenu({ 
   user, 
@@ -42,18 +43,18 @@ export function MobileMenu({
         <div className="absolute top-[56px] left-0 w-full bg-[#061329] border-b border-cyan-200/20 p-6 flex flex-col gap-5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-4 duration-300">
           {user ? (
             <>
-              <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
+              <Link href={ROUTES.DASHBOARD} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
                 {dashboardLabel}
               </Link>
-              <span className="text-base font-semibold text-zinc-500 opacity-50 cursor-not-allowed">
+              <Link href={ROUTES.SETTINGS} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
                 {settingsLabel}
-              </span>
+              </Link>
             </>
           ) : (
             <>
-              <Link href="/" onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">{homeLabel}</Link>
-              <Link href="/login" onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">{loginLabel}</Link>
-              <Link href="/register" onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
+              <Link href={ROUTES.HOME} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">{homeLabel}</Link>
+              <Link href={ROUTES.LOGIN} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">{loginLabel}</Link>
+              <Link href={ROUTES.REGISTER} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
                 {signupLabel}
               </Link>
             </>

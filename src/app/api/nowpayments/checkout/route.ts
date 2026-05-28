@@ -29,7 +29,10 @@ export async function POST(request: Request) {
   const planKey = resolvePlan(formData.get('plan'));
   const plan = PLANS[planKey];
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    'http://localhost:3000';
   const key = process.env.NOW_PAYMENTS_API_KEY;
 
   if (!key) {
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
     return Response.redirect(new URL(`/${locale}/login`, request.url));
   }
 
-  const orderId = `${user.id}-${planKey}-${Date.now()}`;
+  const orderId = `systema:${user.id}:${planKey}:${Date.now()}`;
   const successUrl = `${siteUrl}/${locale}/checkout?status=success&plan=${planKey}`;
   const cancelUrl = `${siteUrl}/${locale}/checkout?status=cancel&plan=${planKey}`;
 

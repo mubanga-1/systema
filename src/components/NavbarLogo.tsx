@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
+import { ROUTES } from './routes';
 
 export function NavbarLogo({ user, children }: { user: unknown; children: React.ReactNode }) {
   const router = useRouter();
@@ -15,7 +16,7 @@ export function NavbarLogo({ user, children }: { user: unknown; children: React.
   };
 
   return (
-    <Link href="/" onClick={handleLogoClick} className="flex items-center gap-0 text-white transition-opacity hover:opacity-90" aria-label="Systema home">
+    <Link href={ROUTES.HOME} onClick={handleLogoClick} className="flex items-center gap-0 text-white transition-opacity hover:opacity-90" aria-label="Systema home">
       {children}
     </Link>
   );

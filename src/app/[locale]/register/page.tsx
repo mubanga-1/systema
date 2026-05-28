@@ -22,6 +22,7 @@ export default async function RegisterPage({
     signUp: t('signUp'),
     passwordMismatch: t('passwordMismatch'),
     signUpError: t('signUpError'),
+    emailExists: t('emailAlreadyRegistered'),
   };
 
   return (
