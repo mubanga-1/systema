@@ -30,6 +30,10 @@ export default async function LoginPage({
           <Link href="/register" className="font-medium text-cyan-200 hover:text-cyan-100">
             {t('register')}
           </Link>
+          {' | '}
+          <Link href="/reset-password" className="font-medium text-cyan-200 hover:text-cyan-100">
+            {t('resetPassword')}
+          </Link>
         </p>
       </section>
     </main>

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { signOutAction } from '../logout/actions';
 
 type PlanKey = 'base' | 'pro' | 'vanguard';
 
@@ -34,6 +33,18 @@ export function CheckoutClient({
   const plan = plans[selectedPlanKey];
   const t = useTranslations();
   const planKeys = Object.keys(plans) as PlanKey[];
+  const statusKey = paymentStatus.toLowerCase();
+  const knownStatuses = [
+    'paid',
+    'unpaid',
+    'active',
+    'past_due',
+    'canceled',
+    'pending',
+  ];
+  const paymentStatusLabel = t(
+    `paymentStatus.${knownStatuses.includes(statusKey) ? statusKey : 'unknown'}`
+  );
 
   return (
     <main className="mx-auto max-w-4xl p-8">
@@ -109,7 +120,7 @@ export function CheckoutClient({
 
           <div className="mt-6 rounded-2xl bg-zinc-900/80 p-5 text-sm text-zinc-300">
             <p className="font-semibold text-white">{t('paymentUnpaid')}</p>
-            <p>{paymentStatus}</p>
+            <p>{paymentStatusLabel}</p>
           </div>
 
           <form action="/api/nowpayments/checkout" method="post" className="mt-6">
@@ -128,7 +139,10 @@ export function CheckoutClient({
           <h2 className="mb-3 text-lg font-semibold text-white">
             {t('checkoutNeedHelp')}
           </h2>
-          <p>{t('checkoutHelpText')}</p>
+          <p className="mb-4">{t('checkoutHelpText')}</p>
+          <div className="rounded-lg border border-amber-500/30 bg-amber-950/40 p-3 text-amber-200">
+            <p className="font-semibold text-amber-100">{t('checkoutUsdtNotice')}</p>
+          </div>
         </div>
       </div>
 

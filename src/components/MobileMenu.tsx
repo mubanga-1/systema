@@ -46,9 +46,9 @@ export function MobileMenu({
               <Link href={ROUTES.DASHBOARD} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
                 {dashboardLabel}
               </Link>
-              <span className="text-base font-semibold text-zinc-500 opacity-50 cursor-not-allowed">
+              <Link href={ROUTES.SETTINGS} onClick={() => setIsOpen(false)} className="text-base font-semibold text-white hover:text-cyan-400 transition-colors">
                 {settingsLabel}
-              </span>
+              </Link>
             </>
           ) : (
             <>

@@ -34,6 +34,18 @@ export default async function DashboardPage({
 
   const isPaid = paymentStatus.toLowerCase() === 'paid';
   const t = await getTranslations({ locale });
+  const knownStatuses = [
+    'paid',
+    'unpaid',
+    'active',
+    'past_due',
+    'canceled',
+    'pending',
+  ];
+  const statusKey = paymentStatus.toLowerCase();
+  const paymentStatusLabel = t(
+    `paymentStatus.${knownStatuses.includes(statusKey) ? statusKey : 'unknown'}`
+  );
 
   return (
     <main className="mx-auto max-w-3xl p-8">
@@ -63,7 +75,7 @@ export default async function DashboardPage({
               {t('dashboardActiveBody')}
             </p>
             <div className="rounded-2xl bg-zinc-900/80 px-5 py-4 text-sm text-zinc-200">
-              {t('paymentPaid')}: <span className="font-semibold text-white">{paymentStatus}</span>
+              {t('paymentPaid')}: <span className="font-semibold text-white">{paymentStatusLabel}</span>
             </div>
           </div>
         ) : (
@@ -84,7 +96,7 @@ export default async function DashboardPage({
                 {t('dashboardPaywallAction')}
               </Link>
               <span className="inline-flex items-center rounded-full bg-zinc-900/90 px-4 py-2 text-sm text-zinc-200">
-                {t('paymentUnpaid')}: {paymentStatus}
+                {t('paymentUnpaid')}: {paymentStatusLabel}
               </span>
             </div>
           </div>

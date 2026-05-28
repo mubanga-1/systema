@@ -11,6 +11,7 @@ export type RegisterFormLabels = {
   signUp: string;
   passwordMismatch: string;
   signUpError: string;
+  emailExists?: string;
 };
 
 type RegisterFormProps = {
@@ -21,6 +22,7 @@ type RegisterFormProps = {
 function resolveError(state: SignUpState, labels: RegisterFormLabels): string | null {
   if (!state.errorCode) return null;
   if (state.errorCode === 'passwordMismatch') return labels.passwordMismatch;
+  if (state.errorCode === 'emailExists') return state.message ?? labels.emailExists ?? labels.signUpError;
   return state.message ?? labels.signUpError;
 }
 

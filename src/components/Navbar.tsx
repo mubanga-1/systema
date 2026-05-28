@@ -54,12 +54,7 @@ export async function Navbar({ locale }: NavbarProps) {
         {isRegisteredUser ? (
             <>
               <Link href={ROUTES.DASHBOARD}>{t('dashboard')}</Link>
-              <span
-                className="cursor-not-allowed opacity-50"
-                aria-disabled="true"
-              >
-                {t('settings')}
-              </span>
+              <Link href={ROUTES.SETTINGS}>{t('settings')}</Link>
             </>
           ) : (
             <GuestNavTabs

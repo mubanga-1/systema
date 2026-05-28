@@ -12,21 +12,59 @@ function safeJsonParse(str: string) {
   }
 }
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const PLAN_KEYS = new Set(['base', 'pro', 'vanguard']);
+
+function parseOrderId(orderId: unknown) {
+  if (typeof orderId !== 'string') {
+    return { userId: null, planKey: null };
+  }
+
+  const structured = orderId.match(
+    /^systema:([0-9a-f-]{36}):(base|pro|vanguard):\d+$/i
+  );
+  if (structured) {
+    return { userId: structured[1], planKey: structured[2].toLowerCase() };
+  }
+
+  const parts = orderId.split('-');
+  const legacyUserId = parts.slice(0, 5).join('-');
+  const legacyPlan = parts[5]?.toLowerCase() ?? null;
+
+  if (UUID_PATTERN.test(legacyUserId) && legacyPlan && PLAN_KEYS.has(legacyPlan)) {
+    return { userId: legacyUserId, planKey: legacyPlan };
+  }
+
+  return { userId: null, planKey: null };
+}
+
 export async function POST(request: Request) {
   const body = await request.text();
 
   const secret = process.env.NOW_PAYMENTS_WEBHOOK_SECRET;
-  const sigHeader = request.headers.get('x-nowpayments-signature') || request.headers.get('x-nowpayment-signature') || request.headers.get('x-signature');
+  const sigHeader = 
+    request.headers.get('x-nowpayments-sig') || 
+    request.headers.get('x-nowpayments-signature') || 
+    request.headers.get('x-nowpayment-signature') || 
+    request.headers.get('x-signature');
 
-  if (secret) {
-    if (!sigHeader) {
-      return new Response('signature header missing', { status: 400 });
-    }
+  if (!secret) {
+    return new Response('webhook secret is not configured', { status: 500 });
+  }
 
-    const expected = crypto.createHmac('sha256', secret).update(body).digest('hex');
-    if (sigHeader !== expected) {
-      return new Response('invalid signature', { status: 401 });
-    }
+  if (!sigHeader) {
+    return new Response('signature header missing', { status: 400 });
+  }
+
+  const expected = crypto.createHmac('sha512', secret).update(body).digest('hex');
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  const signatureBuffer = Buffer.from(sigHeader, 'hex');
+  if (
+    signatureBuffer.length !== expectedBuffer.length ||
+    !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
+  ) {
+    return new Response('invalid signature', { status: 401 });
   }
 
   const payload = safeJsonParse(body);
@@ -34,13 +72,7 @@ export async function POST(request: Request) {
 
   // Determine order id and user
   const orderId = payload.order_id || payload.orderId || payload.id || payload.invoice_id || payload.invoiceId;
-  let userId: string | null = null;
-  let planKey: string | null = null;
-  if (typeof orderId === 'string' && orderId.includes('-')) {
-    const parts = orderId.split('-');
-    userId = parts[0];
-    planKey = parts[1] || null;
-  }
+  const { userId, planKey } = parseOrderId(orderId);
 
   // Identify paid-like statuses
   const statusFields = [payload.status, payload.invoice_status, payload.payment_status, payload.event];
@@ -51,8 +83,41 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
 
   try {
+    // Idempotent invoice handling: update or insert invoice record
+    const providerId = payload.id || payload.invoice_id || payload.invoiceId || null;
+    const invoiceStatus = (payload.status || payload.invoice_status || payload.payment_status || '').toString();
+
+    if (providerId) {
+      // Try to find an existing invoice by provider id
+      const { data: existingInvoice } = await admin
+        .from('invoices')
+        .select('*')
+        .eq('provider_invoice_id', providerId)
+        .maybeSingle();
+
+      if (existingInvoice) {
+        // If status changed, update it
+        const current = (existingInvoice.status || '').toString().toLowerCase();
+        const newStatus = invoiceStatus || (isPaid ? 'paid' : existingInvoice.status);
+        if (newStatus && newStatus.toLowerCase() !== current) {
+          await admin.from('invoices').update({ status: newStatus }).eq('id', existingInvoice.id);
+        }
+      } else {
+        // Insert a new invoice record linked to the user if we can
+        await admin.from('invoices').insert({
+          user_id: userId,
+          subscription_user_id: userId,
+          provider_invoice_id: providerId,
+          invoice_url: payload.invoice_url || payload.url || null,
+          amount: payload.price_amount || payload.amount || null,
+          currency: payload.price_currency || payload.currency || null,
+          status: invoiceStatus || (isPaid ? 'paid' : 'pending'),
+        });
+      }
+    }
+
+    // Update subscription and profile if payment confirmed
     if (isPaid && userId) {
-      // Upsert subscription
       const now = new Date();
       const nextPeriod = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
@@ -62,20 +127,24 @@ export async function POST(request: Request) {
           user_id: userId,
           plan: planKey ?? 'pro',
           status: 'active',
-          provider_subscription_id: payload.id || payload.invoice_id || null,
+          provider_subscription_id: providerId,
           start_at: now.toISOString(),
           current_period_end: nextPeriod.toISOString(),
         })
         .select();
 
-      // Update profile payment_status to 'paid'
       await admin.from('profiles').update({ payment_status: 'paid' }).eq('id', userId);
+
+      console.log(`Payment success for ${userId}. Redirecting logic would use: ${process.env.NOW_PAYMENTS_SUCCESS_URL}`);
     }
 
-    // Optionally handle cancellations or failed events
+    // Handle cancellations or failures
     if (!isPaid && userId && statusStr.includes('cancel')) {
       await admin.from('subscriptions').update({ status: 'canceled' }).eq('user_id', userId);
       await admin.from('profiles').update({ payment_status: 'unpaid' }).eq('id', userId);
+      console.log(`Payment cancelled for ${userId}. Ref: ${process.env.NOW_PAYMENTS_CANCEL_URL}`);
+    } else if (!isPaid && userId && (statusStr.includes('fail') || statusStr.includes('reject'))) {
+      console.log(`Payment failed for ${userId}. Ref: ${process.env.NOW_PAYMENTS_FAIL_URL}`);
     }
   } catch (e) {
     // Log and return 500
