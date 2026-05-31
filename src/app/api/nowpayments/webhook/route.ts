@@ -1,7 +1,10 @@
-'use server';
-
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@utils/supabase/admin';
+import {
+  markPaymentCanceled,
+  markPaymentSucceeded,
+  resolvePlan,
+} from '@utils/supabase/billing';
 import crypto from 'crypto';
 
 function safeJsonParse(str: string) {
@@ -14,8 +17,6 @@ function safeJsonParse(str: string) {
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const PLAN_KEYS = new Set(['base', 'pro', 'vanguard']);
-
 function parseOrderId(orderId: unknown) {
   if (typeof orderId !== 'string') {
     return { userId: null, planKey: null };
@@ -32,7 +33,7 @@ function parseOrderId(orderId: unknown) {
   const legacyUserId = parts.slice(0, 5).join('-');
   const legacyPlan = parts[5]?.toLowerCase() ?? null;
 
-  if (UUID_PATTERN.test(legacyUserId) && legacyPlan && PLAN_KEYS.has(legacyPlan)) {
+  if (UUID_PATTERN.test(legacyUserId) && legacyPlan) {
     return { userId: legacyUserId, planKey: legacyPlan };
   }
 
@@ -57,9 +58,14 @@ export async function POST(request: Request) {
     return new Response('signature header missing', { status: 400 });
   }
 
+  const normalizedSignature = sigHeader.trim();
+  if (!/^[a-f0-9]+$/i.test(normalizedSignature)) {
+    return new Response('invalid signature', { status: 401 });
+  }
+
   const expected = crypto.createHmac('sha512', secret).update(body).digest('hex');
   const expectedBuffer = Buffer.from(expected, 'hex');
-  const signatureBuffer = Buffer.from(sigHeader, 'hex');
+  const signatureBuffer = Buffer.from(normalizedSignature, 'hex');
   if (
     signatureBuffer.length !== expectedBuffer.length ||
     !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
@@ -77,7 +83,7 @@ export async function POST(request: Request) {
   // Identify paid-like statuses
   const statusFields = [payload.status, payload.invoice_status, payload.payment_status, payload.event];
   const statusStr = String(statusFields.find(Boolean) ?? '').toLowerCase();
-  const paidIndicators = ['paid', 'confirmed', 'successful', 'payment_received'];
+  const paidIndicators = ['paid', 'confirmed', 'successful', 'payment_received', 'finished'];
   const isPaid = paidIndicators.some((p) => statusStr.includes(p));
 
   const admin = createAdminClient();
@@ -118,30 +124,18 @@ export async function POST(request: Request) {
 
     // Update subscription and profile if payment confirmed
     if (isPaid && userId) {
-      const now = new Date();
-      const nextPeriod = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-      await admin
-        .from('subscriptions')
-        .upsert({
-          user_id: userId,
-          plan: planKey ?? 'pro',
-          status: 'active',
-          provider_subscription_id: providerId,
-          start_at: now.toISOString(),
-          current_period_end: nextPeriod.toISOString(),
-        })
-        .select();
-
-      await admin.from('profiles').update({ payment_status: 'paid' }).eq('id', userId);
+      await markPaymentSucceeded({
+        userId,
+        plan: resolvePlan(planKey),
+        providerId,
+      });
 
       console.log(`Payment success for ${userId}. Redirecting logic would use: ${process.env.NOW_PAYMENTS_SUCCESS_URL}`);
     }
 
     // Handle cancellations or failures
     if (!isPaid && userId && statusStr.includes('cancel')) {
-      await admin.from('subscriptions').update({ status: 'canceled' }).eq('user_id', userId);
-      await admin.from('profiles').update({ payment_status: 'unpaid' }).eq('id', userId);
+      await markPaymentCanceled(userId);
       console.log(`Payment cancelled for ${userId}. Ref: ${process.env.NOW_PAYMENTS_CANCEL_URL}`);
     } else if (!isPaid && userId && (statusStr.includes('fail') || statusStr.includes('reject'))) {
       console.log(`Payment failed for ${userId}. Ref: ${process.env.NOW_PAYMENTS_FAIL_URL}`);

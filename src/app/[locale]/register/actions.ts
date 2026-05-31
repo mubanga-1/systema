@@ -67,6 +67,7 @@ export async function signUpAction(
       data: {
         locale,
         payment_status: 'unpaid',
+        plan: 'base',
       },
     },
   });

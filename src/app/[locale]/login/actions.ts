@@ -3,6 +3,7 @@
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { createClient } from '@utils/supabase/server';
+import { expireSubscriptionIfDue } from '@utils/supabase/billing';
 
 export type SignInState = {
   errorCode?: 'emailNotConfirmed' | 'signInError';
@@ -10,10 +11,10 @@ export type SignInState = {
 };
 
 function parseLocale(value: FormDataEntryValue | null): 'ru' | 'en' {
-  const locale = String(value ?? routing.defaultLocale);
-  return routing.locales.includes(locale as 'ru' | 'en')
+  const locale = String(value ?? '');
+  return (routing.locales as readonly string[]).includes(locale)
     ? (locale as 'ru' | 'en')
-    : routing.defaultLocale;
+    : (routing.defaultLocale as 'ru' | 'en');
 }
 
 function isInvalidCredentials(message: string) {
@@ -35,6 +36,10 @@ function isEmailNotConfirmed(message: string) {
   );
 }
 
+/**
+ * Sign in action for Systema.
+ * Handles session creation and directs users based on confirmation status.
+ */
 export async function signInAction(
   _prev: SignInState,
   formData: FormData
@@ -64,6 +69,10 @@ export async function signInAction(
 
   if (!data.session) {
     return { errorCode: 'emailNotConfirmed' };
+  }
+
+  if (data.user) {
+    await expireSubscriptionIfDue(data.user.id);
   }
 
   redirect({ href: '/dashboard', locale });

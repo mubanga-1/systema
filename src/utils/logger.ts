@@ -11,11 +11,17 @@ const COLORS: Record<string, string> = {
 
 let initialized = false;
 
+type LogValue = unknown;
+
+type ConsoleWithJson = Console & {
+  logJSON?: (obj: LogValue, label?: string) => void;
+};
+
 function timeStamp() {
   return new Date().toISOString();
 }
 
-function format(level: string, args: any[]) {
+function format(level: string, args: LogValue[]) {
   const prefix = `${COLORS.cyan}[${timeStamp()}]${COLORS.reset}`;
   const levelColor = level === 'ERROR' ? COLORS.red : level === 'WARN' ? COLORS.yellow : COLORS.green;
   const lvl = `${levelColor}${level}${COLORS.reset}`;
@@ -31,10 +37,10 @@ export function initLogging() {
   const origWarn = console.warn.bind(console);
   const origError = console.error.bind(console);
 
-  console.log = (...args: any[]) => origLog(...format('INFO', args));
-  console.info = (...args: any[]) => origInfo(...format('INFO', args));
-  console.warn = (...args: any[]) => origWarn(...format('WARN', args));
-  console.error = (...args: any[]) => origError(...format('ERROR', args));
+  console.log = (...args: LogValue[]) => origLog(...format('INFO', args));
+  console.info = (...args: LogValue[]) => origInfo(...format('INFO', args));
+  console.warn = (...args: LogValue[]) => origWarn(...format('WARN', args));
+  console.error = (...args: LogValue[]) => origError(...format('ERROR', args));
 
   process.on('uncaughtException', (err) => {
     origError(...format('FATAL', ['Uncaught Exception: ', err && err.stack ? err.stack : err]));
@@ -46,25 +52,27 @@ export function initLogging() {
   });
 
   // Optionally add a small helper to log structured objects as JSON
-  (console as any).logJSON = (obj: any, label = 'data') => {
+  (console as ConsoleWithJson).logJSON = (obj: LogValue, label = 'data') => {
     try {
       origLog(...format('INFO', [label, JSON.stringify(obj, null, 2)]));
-    } catch (e) {
+    } catch {
       origLog(...format('INFO', [label, obj]));
     }
   };
 }
 
-export function logInfo(...args: any[]) {
+export function logInfo(...args: LogValue[]) {
   console.log(...args);
 }
 
-export function logWarn(...args: any[]) {
+export function logWarn(...args: LogValue[]) {
   console.warn(...args);
 }
 
-export function logError(...args: any[]) {
+export function logError(...args: LogValue[]) {
   console.error(...args);
 }
 
-export default { initLogging, logInfo, logWarn, logError };
+const logger = { initLogging, logInfo, logWarn, logError };
+
+export default logger;

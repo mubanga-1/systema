@@ -3,6 +3,7 @@ import { createClient } from '@utils/supabase/server';
 import { redirect, Link } from '@/i18n/navigation';
 import { signOutAction } from '../logout/actions';
 import { CheckoutClient } from './CheckoutClient';
+import { getBillingSnapshot } from '@utils/supabase/billing';
 
 const PLANS = {
   base: {
@@ -53,19 +54,10 @@ export default async function CheckoutPage({
     return;
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('payment_status')
-    .eq('id', user.id)
-    .single();
-
-  const paymentStatus =
-    (profile?.payment_status as string | undefined) ??
-    (user.user_metadata?.payment_status as string | undefined) ??
-    'unpaid';
+  const billing = await getBillingSnapshot(user.id);
+  const paymentStatus = billing.paymentStatus;
 
   const planKey = resolvePlan(planParam);
-  const plan = PLANS[planKey];
   const t = await getTranslations({ locale });
 
   const statusMessage =
