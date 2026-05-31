@@ -43,6 +43,9 @@ function parseOrderId(orderId: unknown) {
 export async function POST(request: Request) {
   const body = await request.text();
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com';
+  const webhookUrl = `${baseUrl}/api/nowpayments/webhook`;
+
   const secret = process.env.NOW_PAYMENTS_WEBHOOK_SECRET;
   const sigHeader = 
     request.headers.get('x-nowpayments-sig') || 
@@ -51,7 +54,8 @@ export async function POST(request: Request) {
     request.headers.get('x-signature');
 
   if (!secret) {
-    return new Response('webhook secret is not configured', { status: 500 });
+    console.error(`[Webhook Error] NOW_PAYMENTS_WEBHOOK_SECRET is missing. Webhook URL: ${webhookUrl}`);
+    return new Response('Webhook secret is not configured', { status: 500 });
   }
 
   if (!sigHeader) {
@@ -130,7 +134,7 @@ export async function POST(request: Request) {
         providerId,
       });
 
-      console.log(`Payment success for ${userId}. Redirecting logic would use: ${process.env.NOW_PAYMENTS_SUCCESS_URL}`);
+      console.log(`Payment success for user ${userId}. Internal Success URL: ${process.env.NOW_PAYMENTS_SUCCESS_URL}`);
     }
 
     // Handle cancellations or failures
