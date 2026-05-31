@@ -69,7 +69,13 @@
     "subscription": {
       "title": "Subscription and billing",
       "renewal": "Renewal: {date}",
-      "manage": "Manage plan",
+      "manage": "Manage subscription",
+      "cancelRenewal": "Cancel Renewal",
+      "reactivateRenewal": "Reactivate Renewal",
+      "changePlan": "Change Plan",
+      "changeSuccess": "Subscription updated successfully.",
+      "changeError": "Failed to update subscription. Please try again.",
+      "notApplicable": "N/A",
       "dashboard": "Open dashboard"
     },
     "api": {

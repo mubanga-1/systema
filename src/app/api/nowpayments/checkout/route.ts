@@ -1,15 +1,6 @@
-'use server';
-
 import { createClient } from '@utils/supabase/server';
 import { routing } from '@/i18n/routing';
-
-const PLANS = {
-  base: { label: 'BASE', price: 29 },
-  pro: { label: 'PRO', price: 79 },
-  vanguard: { label: 'VANGUARD', price: 299 },
-} as const;
-
-type PlanKey = keyof typeof PLANS;
+import { PLANS, resolvePlan } from '@utils/supabase/billing';
 
 function resolveLocale(value: FormDataEntryValue | null): 'ru' | 'en' {
   const locale = String(value ?? routing.defaultLocale);
@@ -18,9 +9,18 @@ function resolveLocale(value: FormDataEntryValue | null): 'ru' | 'en' {
     : routing.defaultLocale;
 }
 
-function resolvePlan(value: FormDataEntryValue | null): PlanKey {
-  const plan = String(value ?? 'pro').toLowerCase();
-  return plan in PLANS ? (plan as PlanKey) : 'pro';
+function paymentReturnUrl(
+  siteUrl: string,
+  locale: string,
+  envKey: string,
+  fallback: string,
+  plan: string
+) {
+  const rawPath = process.env[envKey] ?? fallback;
+  const path = rawPath.replace(/^\//, '');
+  const joiner = path.includes('?') ? '&' : '?';
+
+  return `${siteUrl}/${locale}/${path}${joiner}plan=${plan}`;
 }
 
 export async function POST(request: Request) {
@@ -49,8 +49,6 @@ export async function POST(request: Request) {
   }
 
   const orderId = `systema:${user.id}:${planKey}:${Date.now()}`;
-  const successUrl = `${siteUrl}/${locale}/checkout?status=success&plan=${planKey}`;
-  const cancelUrl = `${siteUrl}/${locale}/checkout?status=cancel&plan=${planKey}`;
 
   const response = await fetch('https://api.nowpayments.io/v1/invoice', {
     method: 'POST',
@@ -59,12 +57,32 @@ export async function POST(request: Request) {
       'x-api-key': key,
     },
     body: JSON.stringify({
-      price_amount: plan.price,
+      price_amount: plan.amount,
       price_currency: 'usd',
       order_id: orderId,
       order_description: `Systema ${plan.label} subscription`,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
+      success_url: paymentReturnUrl(
+        siteUrl,
+        locale,
+        'NOW_PAYMENTS_SUCCESS_URL',
+        'payments/success',
+        planKey
+      ),
+      cancel_url: paymentReturnUrl(
+        siteUrl,
+        locale,
+        'NOW_PAYMENTS_CANCEL_URL',
+        'payments/cancel',
+        planKey
+      ),
+      fail_url: paymentReturnUrl(
+        siteUrl,
+        locale,
+        'NOW_PAYMENTS_FAIL_URL',
+        'payments/fail',
+        planKey
+      ),
+      ipn_callback_url: `${siteUrl}/api/nowpayments/webhook`,
     }),
   });
 

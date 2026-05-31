@@ -70,7 +70,8 @@ If Supabase returns a session immediately, `signUpAction` redirects straight to 
 
 `/checkout` requires an active session. It displays `payment_status` from `user.user_metadata` (later: `profiles.payment_status`).
 
-Cryptomus integration is a future phase; the page shows a placeholder until wired.
+NOWPayments checkout is wired through `/api/nowpayments/checkout` and payment
+confirmation is handled by `/api/nowpayments/webhook`.
 
 ## 7. Verify
 

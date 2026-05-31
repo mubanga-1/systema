@@ -17,6 +17,7 @@ create table if not exists public.profiles (
   email text,
   locale text not null default 'ru',
   payment_status text not null default 'unpaid',
+  plan text not null default 'base',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -36,12 +37,13 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, locale, payment_status)
+  insert into public.profiles (id, email, locale, payment_status, plan)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'locale', 'ru'),
-    coalesce(new.raw_user_meta_data->>'payment_status', 'unpaid')
+    coalesce(new.raw_user_meta_data->>'payment_status', 'unpaid'),
+    coalesce(new.raw_user_meta_data->>'plan', 'base')
   );
   return new;
 end;

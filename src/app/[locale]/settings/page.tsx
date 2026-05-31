@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { createClient } from '@utils/supabase/server';
 import { signOutAction } from '../logout/actions';
-import { ChangePasswordForm } from './ChangePasswordForm';
-import { AccountResetPasswordForm } from './AccountResetPasswordForm';
+import { getBillingSnapshot } from '@utils/supabase/billing';
 
 function formatDate(value: string | null | undefined, locale: string) {
   if (!value) return '-';
@@ -28,6 +27,14 @@ function statusClass(status: string) {
   return 'border-zinc-500/40 bg-zinc-500/10 text-zinc-100';
 }
 
+function renewalLabel(snapshot: Awaited<ReturnType<typeof getBillingSnapshot>>, locale: string) {
+  if (snapshot.subscriptionCount === 0) {
+    return 'Never paid';
+  }
+
+  return formatDate(snapshot.nextBillingAt, locale);
+}
+
 export default async function SettingsPage({
   params,
 }: Readonly<{
@@ -45,7 +52,7 @@ export default async function SettingsPage({
     notFound();
   }
 
-  const [{ data: profile }, { data: subscription }, { data: invoices }] =
+  const [{ data: profile }, { data: invoices }, billing] =
     await Promise.all([
       supabase
         .from('profiles')
@@ -53,27 +60,23 @@ export default async function SettingsPage({
         .eq('id', user.id)
         .maybeSingle(),
       supabase
-        .from('subscriptions')
-        .select('plan, status, current_period_end, created_at')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      supabase
         .from('invoices')
         .select('invoice_url, amount, currency, status, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(3),
+      getBillingSnapshot(user.id),
     ]);
 
   const t = await getTranslations({ locale, namespace: 'settingsPage' });
   const commonT = await getTranslations({ locale });
   const paymentStatus =
+    billing.paymentStatus ??
     (profile?.payment_status as string | undefined) ??
     (user.user_metadata?.payment_status as string | undefined) ??
     'unpaid';
-  const plan = (subscription?.plan as string | undefined) ?? 'pro';
-  const subscriptionStatus =
-    (subscription?.status as string | undefined) ?? paymentStatus;
+  const plan = billing.plan;
+  const subscriptionStatus = billing.subscriptionStatus;
   const invoiceRows = invoices ?? [];
   const translatedStatus = (status: string) => {
     const key = status.toLowerCase();
@@ -154,7 +157,7 @@ export default async function SettingsPage({
               <p className="text-2xl font-semibold uppercase text-white">{plan}</p>
               <p className="mt-1 text-sm text-zinc-400">
                 {t('subscription.renewal', {
-                  date: formatDate(subscription?.current_period_end, locale),
+                  date: renewalLabel(billing, locale),
                 })}
               </p>
             </div>
@@ -164,7 +167,7 @@ export default async function SettingsPage({
           </div>
           <div className="mt-6 flex flex-col gap-3 min-[608px]:flex-row">
             <Link
-              href="/checkout?plan=pro"
+              href="/billing"
               className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
             >
               {t('subscription.manage')}
@@ -260,53 +263,6 @@ export default async function SettingsPage({
           </div>
         </section>
 
-        <section className={sectionClass}>
-          <p className={labelClass}>{t('security.title')}</p>
-          <p className={`mt-3 ${mutedClass}`}>{t('security.description')}</p>
-          <ChangePasswordForm
-            labels={{
-              currentPassword: t('security.currentPassword'),
-              newPassword: commonT('newPassword'),
-              confirmPassword: commonT('confirmPassword'),
-              submit: t('security.changePassword'),
-              success: t('security.changeSuccess'),
-              passwordMismatch: commonT('passwordMismatch'),
-              invalidCurrentPassword: t('security.invalidCurrentPassword'),
-              changeError: t('security.changeError'),
-            }}
-          />
-          <div className="mt-5 flex flex-col gap-3 min-[608px]:flex-row">
-            <AccountResetPasswordForm
-              locale={locale}
-              labels={{
-                submit: t('security.forgotPassword'),
-                success: t('security.resetEmailSent'),
-                error: t('security.resetEmailError'),
-              }}
-            />
-            <button
-              type="button"
-              disabled
-              className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-semibold text-zinc-500"
-            >
-              {t('security.sessions')}
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-rose-400/30 bg-rose-950/30 p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-200">
-            {t('danger.title')}
-          </p>
-          <p className={`mt-3 ${mutedClass}`}>{t('danger.description')}</p>
-          <button
-            type="button"
-            disabled
-            className="mt-5 rounded-full border border-rose-300/30 px-4 py-2 text-sm font-semibold text-rose-200 opacity-60"
-          >
-            {t('danger.delete')}
-          </button>
-        </section>
       </div>
 
       <section className="mt-5 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6">

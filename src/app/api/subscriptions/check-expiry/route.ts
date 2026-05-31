@@ -1,6 +1,5 @@
-'use server';
-
 import { createAdminClient } from '@utils/supabase/admin';
+import { expireSubscriptionIfDue } from '@utils/supabase/billing';
 import { hasValidCronSecret } from '../../routeGuards';
 
 type ExpiryCheckResult = {
@@ -30,8 +29,7 @@ export async function POST(request: Request) {
 
   for (const s of due ?? []) {
     try {
-      await admin.from('subscriptions').update({ status: 'past_due' }).eq('user_id', s.user_id);
-      await admin.from('profiles').update({ payment_status: 'unpaid' }).eq('id', s.user_id);
+      await expireSubscriptionIfDue(s.user_id);
       results.push({ user: s.user_id, updated: true });
     } catch (e) {
       results.push({ user: s.user_id, error: String(e) });
